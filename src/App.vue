@@ -2,7 +2,7 @@
   <div id="app">
     <TodoHeader></TodoHeader>
     <TodoInput @addTodoB="addTodoC"></TodoInput>
-    <TodoList :propsData="todoArray" @removeTodoB="removeTodoC" @updateTodoB="updateTodoC"></TodoList>
+    <TodoList :propsData="todoItems" @removeTodoB="removeTodoC" @updateTodoA="updateTodoB"></TodoList>
     <TodoFooter @clearAllB="clearAllC"></TodoFooter>
   </div>
 </template>
@@ -23,24 +23,24 @@ export default {
   },
   data() {
     return {
-      todoArray: []
-    }
-  },
-  created() {
-    if (localStorage.length > 0) {
-      for (let i = 0; i < localStorage.length; i++) {
-        let keyDate = localStorage.key(i);
-        if (localStorage.key(i) !== 'loglevel:webpack-dev-server') {
-          let dataString = localStorage.getItem(keyDate);
-          let dataJson = JSON.parse(dataString);
-          this.todoArray = [
-            ...this.todoArray,
-            dataJson
-          ]
+      todoItems: [
+        {
+          id: 12345678,
+          text: "밥먹기",
+          isDone: true
+        },
+        {
+          id: 12345679,
+          text: "Vue 뿌시기",
+          isDone: false
+        },
+        {
+          id: 12345680,
+          text: "청소하기",
+          isDone: false
         }
-      }
+      ]
     }
-    console.log(this.todoArray);
   },
   methods: {
     addTodoC(text) {
@@ -49,20 +49,21 @@ export default {
         text,
         isDone: false
       };
-      localStorage.setItem(newItem.id, JSON.stringify(newItem));
-      this.todoArray.push(newItem);
+      this.todoItems.push(newItem);
     },
     removeTodoC(idx, id, text) {
-      // console.log(idx, id, text)
-      localStorage.removeItem(id);
-      this.todoArray.splice(idx, 1);
+      this.todoItems.splice(idx, 1);
     },
     clearAllC() {
-      localStorage.clear();
-      this.todoArray = [];
+      this.todoItems = [];
     },
-    updateTodoC() {
-      console.log('받긴 했는데');
+    updateTodoB({ id, text }) {
+      const todoItems = [...this.todoItems];
+      const todo = todoItems.find(todo => todo.id === id);
+      if (todo) {
+        todo.text = text;
+        this.todoItems = todoItems;
+      }
     }
   }
 }
