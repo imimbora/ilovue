@@ -12,6 +12,7 @@ import TodoHeader from './components/TodoHeader.vue'
 import TodoInput from './components/TodoInput.vue'
 import TodoList from './components/TodoList.vue'
 import TodoFooter from './components/TodoFooter.vue'
+import axios from 'axios'
 
 export default {
   name: "App",
@@ -23,48 +24,71 @@ export default {
   },
   data() {
     return {
-      todoItems: [
-        {
-          id: 12345678,
-          text: "밥먹기",
-          isDone: true
-        },
-        {
-          id: 12345679,
-          text: "Vue 뿌시기",
-          isDone: false
-        },
-        {
-          id: 12345680,
-          text: "청소하기",
-          isDone: false
-        }
-      ]
+      todoItems: []
     }
   },
   methods: {
     addTodoC(text) {
-      let newItem = {
+      /* let newItem = {
         id: Date.now(),
         text,
         isDone: false
-      };
-      this.todoItems.push(newItem);
+      }; */
+      // this.todoItems.push(newItem);
+
+      let url = 'http://127.0.0.1:5000/todo/'
+
+      axios.post(url, {
+        todo: text
+      }).then(res => {
+        console.log(res)
+      })
+      this.getTodo()
     },
-    removeTodoC(idx, id, text) {
-      this.todoItems.splice(idx, 1);
+    removeTodoC(id) {
+      // this.todoItems.splice(idx, 1);
+      let url = `http://127.0.0.1:5000/todo/${id}`
+
+      axios.delete(url).then(res => {
+        console.log(res)
+      })
+      
+      this.getTodo()
     },
     clearAllC() {
       this.todoItems = [];
     },
-    updateTodoB({ id, text }) {
-      const todoItems = [...this.todoItems];
-      const todo = todoItems.find(todo => todo.id === id);
-      if (todo) {
-        todo.text = text;
-        this.todoItems = todoItems;
-      }
+    updateTodoB({ id, todo }) {
+      // console.log(id)
+      // console.log(todo)
+
+      let url = `http://127.0.0.1:5000/todo/${id}`
+      axios.put(url, {
+        todo: todo
+      }).then(res => {
+        // console.log(res)
+        const todoItems = [...this.todoItems];
+        const todo_ = todoItems.find(todo_ => todo_.id === id);
+        if (todo_) {
+          todo_.todo = todo;
+          this.todoItems = todoItems;
+        }
+      })
+    },
+    getTodo(){
+      let url = 'http://127.0.0.1:5000/todo/'
+      axios.get(url).then(res => {
+        this.todoItems = res.data.data
+        console.log(res.data.data)
+      })
     }
+  },
+  mounted(){
+    // console.log('mounted')
+  },
+  created(){
+    // console.log('created')
+    this.getTodo()
   }
 }
 </script>

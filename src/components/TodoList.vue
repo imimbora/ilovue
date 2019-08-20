@@ -3,11 +3,11 @@
     <ul>
       <li
         :class="{editing: edit.id === id}"
-        v-for="({id, text, isDone}, idx) in propsData" :key="idx">
+        v-for="({id, todo}) in propsData" :key="id">
         <input type="checkbox">
-        <label @click="handleEdit({ id, text })">{{ text }}</label>
-        <input type="text" class="edit" v-model="edit.text" @keypress="handleUpdate">
-        <button class="btn-del" @click="removeTodoA(idx, id, text)">삭제</button>
+        <label @click="handleEdit({ id, todo })">{{ todo }}</label>
+        <input type="text" class="edit" v-model="edit.todo" @keypress="handleUpdate">
+        <button class="btn-del" @click="removeTodoA(id)">삭제</button>
       </li>
     </ul>
   </section>
@@ -21,19 +21,19 @@ export default {
   data() {
     return {
       edit: {
-        text: "",
+        todo: "",
         id: -1
       }
     }
   },
   methods: {
-    removeTodoA(idx, id, text) {
-      this.$emit('removeTodoB', idx, id, text);
+    removeTodoA(id) {
+      this.$emit('removeTodoB', id);
     },
-    handleEdit({ id, text }) {
+    handleEdit({ id, todo }) {
       this.edit = {
         id,
-        text
+        todo
       };
     },
     handleUpdate({ keyCode }) {
@@ -41,7 +41,7 @@ export default {
         this.$emit("updateTodoA", this.edit);
         this.edit = {
           id: -1,
-          text: ""
+          todo: ""
         }
       }
     }
